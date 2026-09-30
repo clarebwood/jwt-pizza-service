@@ -39,3 +39,34 @@ function expectValidJwt(potentialJwt) {
 function randomName() {
   return Math.random().toString(36).substring(2, 12);
 }
+
+test('logout', async () => {
+    const logoutRes = await request(app).delete('/api/auth').set('Authorization', `Bearer ${testUserAuthToken}`);
+
+    expect(logoutRes.status).toBe(200);
+    expect(logoutRes.body).toEqual({ message: 'logout successful' });
+
+    const reLogoutRes = await request(app).delete('/api/auth').set('Authorization', `Bearer ${testUserAuthToken}`);
+
+    expect(reLogoutRes.status).toBe(401);
+    expect(reLogoutRes.body).toEqual({ message: 'unauthorized' });
+});
+
+
+test('register', async () => {
+    const newUser = {name: 'regtest diner', email:'regtest@test.com', password: 'r'};
+    const registerRes = await request(app).post('/api/auth').send(newUser);
+
+    expect(registerRes.status).toBe(200);
+
+    const expectedUser = { ...newUser, roles: [{ role: 'diner' }],};
+
+
+
+    expect(registerRes.body.user).toMatchObject({name: expectedUser.name, email: expectedUser.email, roles: [{ role: 'diner' }],
+});
+
+expect(registerRes.body.user.password).toBeUndefined();
+
+expectValidJwt(registerRes.body.token);
+});
