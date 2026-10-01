@@ -54,7 +54,7 @@ test('logout', async () => {
 
 
 test('register', async () => {
-    const newUser = {name: 'regtest diner', email:'regtest@test.com', password: 'r'};
+    const newUser = {name: 'regtest diner', email:`${randomName()}@test.com`, password: 'r'};
     const registerRes = await request(app).post('/api/auth').send(newUser);
 
     expect(registerRes.status).toBe(200);
